@@ -31,5 +31,6 @@ public class MultiClient {
 		catch (Exception e) {
 			System.out.println(" 예외 발생[MultiClient]" + e);
 		}
+//		catch (UnsupportedEncodingException e) {}
 	}
 }

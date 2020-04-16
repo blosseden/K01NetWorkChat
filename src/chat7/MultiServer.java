@@ -6,13 +6,17 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class MultiServer {
+
 
 	static ServerSocket serverSocket = null;
 	static Socket socket = null;
@@ -58,6 +62,7 @@ public class MultiServer {
 		}		
 	}
 
+
 	public static void main(String[] args) {
 		MultiServer ms = new MultiServer();
 		ms.init();
@@ -81,7 +86,7 @@ public class MultiServer {
 					없는 경우에는 메세지만 클라이언트로 전달한다.
 				 */
 				if(name.equals("")) {
-					it_out.println(msg);
+					it_out.println(URLEncoder.encode(msg, "UTF-8"));
 				}
 				else {
 					it_out.println("["+ name +"]:"+ msg);
@@ -93,10 +98,21 @@ public class MultiServer {
 		}
 	}
 
+
+	//	public void ChatterAllData() {
+	//
+	//		Set<String> key = clientMap.keySet();
+	//		Iterator<String> itr = key.iterator();
+	//		while(itr.hasNext()) {
+	//			String str = itr.next();
+	//		}
+	//	}
+
 	//내부클래스
 	class MultiServerT extends Thread {
 
-		//멤버변수
+		//멤버변수 
+		String threadName;
 		Socket socket;
 		PrintWriter out = null;
 		BufferedReader in = null;
@@ -112,7 +128,11 @@ public class MultiServer {
 			catch (Exception e) {
 				System.out.println("예외 : "+ e);
 			}
-		}	
+		}
+
+		public MultiServerT(String name) {
+			threadName = name;
+		}
 		@Override
 		public void run() {
 
@@ -129,7 +149,7 @@ public class MultiServer {
 				sendAllMsg("", name + "님이 입장하셨습니다");
 
 				clientMap.put(name, out);
-				
+
 				//HashMap에 저장된 객체의 수로 접속자수를 파악 할 수 있다.
 				System.out.println(name+ "접속");
 				System.out.println("현재 접속자 수는"+
@@ -139,8 +159,19 @@ public class MultiServer {
 				while (in!=null) {
 					s = in.readLine();
 					s = URLDecoder.decode(s, "UTF-8");
+//
+//					if(s.equalsIgnoreCase("/list")) {
+//						System.out.println("현재 접속한 사람덜 ↓↓↓ "+clientMap.get(name));
+//						Set<String> key = clientMap.keySet();
+//						Iterator<String> it = key.iterator();
+//						while(it.hasNext()) {
+//							String keys = it.next();
+//							PrintWriter value = clientMap.get(keys);
+//							System.out.println(String.format("%s:%s",key, value));
+//						}
+//					}
 					if ( s == null )
-					break;
+						break;
 
 					System.out.println(name + ">>" + s);
 					sendAllMsg(name, s);	
